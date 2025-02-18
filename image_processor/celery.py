@@ -1,7 +1,7 @@
 import os
 from celery import Celery 
 
-os.environ.setdefault('DJANGO_SETTING_MODULE', 'image_processor.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'image_processor.settings')
 
 app = Celery('image_processor')
 app.config_from_object('django.conf:settings', namespace='CELERY')

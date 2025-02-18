@@ -1,12 +1,10 @@
-import csv
-import uuid
-
 from rest_framework.response import Response
 from rest_framework import views, status
 
-from .models import ImageProcessingRequest, ProductImage
+from .services import get_processing_request
+from .utils import compress_images
+
 from .serializers import UploadCSVSerializer
-from .tasks import process_image
 
 
 # Create your views here.
@@ -15,23 +13,14 @@ class UploadCSV(views.APIView):
         serializer = UploadCSVSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        csv_file = serializer.validated_data.get('csv_file')
-        decoded_file = csv_file.read().decode('utf-8').splitlines()
-        reader = csv.reader(decoded_file)
+        response = compress_images(serializer.validated_data.get('csv_file'))
+        return Response(response, status=status.HTTP_202_ACCEPTED)
+    
 
-        request_id = str(uuid.uuid4())
-        image_request = ImageProcessingRequest.objects.create(request_id=request_id)
-
-        for row in reader:
-            if len(row) < 3:
-                continue
-            product_name, input_urls = row[1], row[2]
-            urls = input_urls.split(',')
-            for url in urls:
-                ProductImage.objects.create(request=image_request, product_name=product_name, 
-                                            input_urls=url.strip())
-        process_image.delay(request_id)
-        return Response({
-            'status': True, 'message': "Image processing has been started", 'request_id': request_id
-        }, status=status.HTTP_202_ACCEPTED)
+class CheckStatus(views.APIView):
+    def get(self, request):
+        request_id = request.GET.get('request_id')
+        process_request = get_processing_request(str(request_id))
+        print(process_request)
+        return Response({'status': True, 'image_status': process_request.status}, 
+                        status=status.HTTP_200_OK)
