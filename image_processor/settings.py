@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'image_processing',
     'rest_framework',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -136,3 +137,18 @@ CELERY_TASK_SERIALIZER = 'json'
 
 
 COMPRESS_IMAGE_URL = 'http://127.0.0.1:9500/api/compress-image/'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+from rest_framework.reverse import reverse_lazy
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Image Processing API',
+    'DESCRIPTION': 'Image Processing API for compressing images by uploading CSV file',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    "EXCLUDE_PATH": [reverse_lazy("schema")],
+}

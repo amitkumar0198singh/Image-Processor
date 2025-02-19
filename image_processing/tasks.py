@@ -40,12 +40,3 @@ def process_image(self, request_id):
         process_request.save()
         return {'status': False, 'message': f"Execption occurs during processing image:{e}"}
     
-
-# img = Image.open(BytesIO(response.content))
-# img_format = img.format if img.format else 'JPEG'
-# print(img_format)
-# output_dir = 'media/output'
-# os.makedirs(output_dir, exist_ok=True)
-# output_path = f"{output_dir}/{os.path.basename(url.strip())}"
-# img.save(output_path, img_format, quality=50)
-# output_urls.append(output_path)
