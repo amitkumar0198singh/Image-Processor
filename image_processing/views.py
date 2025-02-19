@@ -1,10 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import views, status
 
-from .services import get_processing_request
-from .utils import compress_images
-
 from .serializers import UploadCSVSerializer
+from .services import compress_images, get_processing_request
 
 
 # Create your views here.
@@ -27,6 +25,5 @@ class CheckStatus(views.APIView):
         if not process_request:
             return Response({'status': False, 'message': 'Invalid request_id'}, 
                             status=status.HTTP_400_BAD_REQUEST)
-        print(process_request)
         return Response({'status': True, 'image_processing_status': process_request.status}, 
                         status=status.HTTP_200_OK)

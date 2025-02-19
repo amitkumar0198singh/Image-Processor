@@ -3,18 +3,15 @@ import requests
 from django.conf import settings
 
 from celery import shared_task
-from .services import get_processing_request
 
-from .models import ProductImage
+from .models import ProductImage, ImageProcessingRequest
 from .enums import ProcessingStatus
 
 
 
 @shared_task(bind=True, autoretry_for=(Exception,), retry_backoff=3, max_retries=5)
 def process_image(self, request_id):
-    process_request = get_processing_request(request_id)
-    if not process_request:
-        return {'status': False, 'message': "Invalid request_id"}
+    process_request = ImageProcessingRequest.objects.get(request_id=request_id)
     images = ProductImage.objects.filter(request=process_request)
 
     try:
