@@ -20,7 +20,13 @@ class UploadCSV(views.APIView):
 class CheckStatus(views.APIView):
     def get(self, request):
         request_id = request.GET.get('request_id')
+        if not request_id:
+            return Response({'status': False, 'message': 'request_id is required'}, 
+                            status=status.HTTP_400_BAD_REQUEST)
         process_request = get_processing_request(str(request_id))
+        if not process_request:
+            return Response({'status': False, 'message': 'Invalid request_id'}, 
+                            status=status.HTTP_400_BAD_REQUEST)
         print(process_request)
-        return Response({'status': True, 'image_status': process_request.status}, 
+        return Response({'status': True, 'image_processing_status': process_request.status}, 
                         status=status.HTTP_200_OK)
