@@ -61,15 +61,15 @@ def check_status_schema():
         summary="Check Status",
         description="Check the status of the image processing request",
         tags=['Image Processing'],
-        responses={
-            200: StatusSuccessResponse,
-            400: StatucFailureResponse
-        },
         parameters=[OpenApiParameter(
             type=str, 
             name='request_id',
             required=True, 
             location=OpenApiParameter.QUERY,
             description='Unique identifier for the request'
-        )]
+        )],
+        responses={
+            200: StatusSuccessResponse,
+            400: StatucFailureResponse
+        },
     )
