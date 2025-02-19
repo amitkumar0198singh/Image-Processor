@@ -1,12 +1,16 @@
 from rest_framework.response import Response
 from rest_framework import views, status
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .serializers import UploadCSVSerializer
 from .services import compress_images, get_processing_request
-
+from .docs import upload_csv_schema, check_status_schema
 
 # Create your views here.
 class UploadCSV(views.APIView):
+    parser_classes = (MultiPartParser, FormParser) 
+
+    @upload_csv_schema()
     def post(self, request):
         serializer = UploadCSVSerializer(data=request.data)
         if not serializer.is_valid():
@@ -16,6 +20,7 @@ class UploadCSV(views.APIView):
     
 
 class CheckStatus(views.APIView):
+    @check_status_schema()
     def get(self, request):
         request_id = request.GET.get('request_id')
         if not request_id:
