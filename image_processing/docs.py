@@ -21,7 +21,7 @@ StatusSuccessResponse = inline_serializer(
     }
 )
 
-StatucFailureResponse = inline_serializer(
+StatusFailureResponse = inline_serializer(
     name='StatusFailureResponse',
     fields={
         'status': serializers.BooleanField(help_text='Status of the request', required=False),
@@ -70,6 +70,6 @@ def check_status_schema():
         )],
         responses={
             200: StatusSuccessResponse,
-            400: StatucFailureResponse
+            400: StatusFailureResponse
         },
     )
