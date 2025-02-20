@@ -31,9 +31,9 @@ StatusFailureResponse = inline_serializer(
 
 
 SerializerValidationFailureResponse = inline_serializer(
-    name='ErrorResponse',
+    name='SerializerValidationFailureResponse',
     fields={
-        'errors': serializers.ListField(
+        'csv_file': serializers.ListField(
             child=serializers.CharField(),
             help_text='List of error messages describing why the request was invalid.',
             required=False
