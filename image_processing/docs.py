@@ -17,7 +17,25 @@ StatusSuccessResponse = inline_serializer(
     name='StatusSuccessResponse',
     fields={
         'status': serializers.BooleanField(help_text='Status of the request', required=False),
-        'image_processing_status': serializers.CharField(help_text='Status of the image processing request', required=False)
+        'image_processing_status': serializers.CharField(help_text='Status of the image processing request', required=False),
+        'images': serializers.ListField(
+            child=inline_serializer(
+                name='ProductImageSerializer',
+                fields={
+                    'product_name': serializers.CharField(help_text='Name of the product', required=False),
+                    'input_image_urls': serializers.ListField(
+                        child=serializers.CharField(),
+                        help_text='List of input image URLs',
+                        required=False
+                    ),
+                    'output_image_urls': serializers.ListField(
+                        child=serializers.CharField(),
+                        help_text='List of output image URLs',
+                        required=False
+                    )
+                }
+            ), help_text='List of images details', required=False
+        )
     }
 )
 

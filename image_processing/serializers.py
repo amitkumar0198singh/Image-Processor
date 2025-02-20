@@ -18,8 +18,8 @@ class UploadCSVSerializer(serializers.Serializer):
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
-    input_image_urls = serializers.SerializerMethodField(required=False)
-    output_image_urls = serializers.SerializerMethodField(required=False)
+    input_image_urls = serializers.SerializerMethodField()
+    output_image_urls = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductImage

@@ -32,5 +32,6 @@ class CheckStatus(views.APIView):
             return Response({'status': False, 'message': 'Invalid request_id'}, 
                             status=status.HTTP_400_BAD_REQUEST)
         images = ProductImage.objects.filter(request=process_request)
+        image_serializer = ProductImageSerializer(images, many=True)
         return Response({'status': True, 'image_processing_status': process_request.status, 
-                        'images': ProductImageSerializer(images, many=True).data}, status=status.HTTP_200_OK)
+                        'images': image_serializer.data}, status=status.HTTP_200_OK)
