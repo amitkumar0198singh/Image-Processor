@@ -1,7 +1,7 @@
 import os
 
 from rest_framework import serializers
-from .models import ImageProcessingRequest
+from .models import ProductImage
 
 
 class UploadCSVSerializer(serializers.Serializer):
@@ -15,3 +15,22 @@ class UploadCSVSerializer(serializers.Serializer):
             raise serializers.ValidationError({'error': "Please upload CSV file"})
         return data
         
+
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    input_image_urls = serializers.SerializerMethodField(required=False)
+    output_image_urls = serializers.SerializerMethodField(required=False)
+
+    class Meta:
+        model = ProductImage
+        fields = ['product_name', 'input_image_urls', 'output_image_urls']
+
+    def get_input_image_urls(self, image):
+        if not image.input_image_urls:
+            return []
+        return [url.strip() for url in image.input_image_urls.split(',')]
+    
+    def get_output_image_urls(self, image):
+        if not image.output_image_urls:
+            return []
+        return [url.strip() for url in image.output_image_urls.split(',')]

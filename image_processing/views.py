@@ -2,7 +2,8 @@ from rest_framework.response import Response
 from rest_framework import views, status
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from .serializers import UploadCSVSerializer
+from .models import ProductImage
+from .serializers import ProductImageSerializer, UploadCSVSerializer
 from .services import compress_images, get_processing_request
 from .docs import upload_csv_schema, check_status_schema
 
@@ -30,5 +31,6 @@ class CheckStatus(views.APIView):
         if not process_request:
             return Response({'status': False, 'message': 'Invalid request_id'}, 
                             status=status.HTTP_400_BAD_REQUEST)
-        return Response({'status': True, 'image_processing_status': process_request.status}, 
-                        status=status.HTTP_200_OK)
+        images = ProductImage.objects.filter(request=process_request)
+        return Response({'status': True, 'image_processing_status': process_request.status, 
+                        'images': ProductImageSerializer(images, many=True).data}, status=status.HTTP_200_OK)
