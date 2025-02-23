@@ -32,10 +32,5 @@ def process_image(self, request_id):
     else:
         process_request.status = ProcessingStatus.COMPLETED.value
     process_request.save()
-
-    send_webhook_url = f'{settings.BASE_URL}{reverse('image_processing:send_webhook')}'
-    send_webhook_response = requests.post(send_webhook_url, json={'request_id': request_id}, timeout=10)
-    send_webhook_response.raise_for_status()
-    print(send_webhook_response.get('message'))
     print({'status': not processsing_failed, 'message': "Image processing completed" \
             if not processsing_failed else "Some images failed to process"})
