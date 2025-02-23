@@ -27,7 +27,7 @@ class CheckStatus(views.APIView):
             return Response({'status': False, 'message': 'request_id is required'}, 
                             status=status.HTTP_400_BAD_REQUEST)
         process_request = services.get_processing_request(request_id)
-        images = services.get_all_images(request_id)
+        images = services.get_all_images(process_request)
         return Response({'status': True, 'process_request_status': process_request.status,
                                     'images': images}, status=status.HTTP_200_OK)
 
