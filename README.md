@@ -29,7 +29,7 @@ Ensure you have the following installed:
 ### Setup
 1. Clone the repository:
    ```sh
-   git clone [https://github.com/amitkumar0198singh/Image-Processor/](https://github.com/amitkumar0198singh/Image-Processor/)
+   git clone https://github.com/amitkumar0198singh/Image-Processor/
    cd Image-Processor
    ```
 
