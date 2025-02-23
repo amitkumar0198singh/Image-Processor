@@ -2,9 +2,8 @@ from rest_framework.response import Response
 from rest_framework import views, status
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from .models import ProductImage
-from .serializers import ProductImageSerializer, UploadCSVSerializer
-from .services import compress_images, get_processing_request
+from . import services 
+from .serializers import UploadCSVSerializer
 from .docs import upload_csv_schema, check_status_schema
 
 # Create your views here.
@@ -16,7 +15,7 @@ class UploadCSV(views.APIView):
         serializer = UploadCSVSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        response = compress_images(serializer.validated_data.get('csv_file'))
+        response = services.compress_images(serializer.validated_data.get('csv_file'))
         return Response(response, status=status.HTTP_202_ACCEPTED)
     
 
@@ -27,11 +26,18 @@ class CheckStatus(views.APIView):
         if not request_id:
             return Response({'status': False, 'message': 'request_id is required'}, 
                             status=status.HTTP_400_BAD_REQUEST)
-        process_request = get_processing_request(str(request_id))
-        if not process_request:
-            return Response({'status': False, 'message': 'Invalid request_id'}, 
+        process_request = services.get_processing_request(request_id)
+        images = services.get_all_images(request_id)
+        return Response({'status': True, 'process_request_status': process_request.status,
+                                    'images': images}, status=status.HTTP_200_OK)
+
+
+class WebhookView(views.APIView):
+    def post(self, request):
+        request_id = request.data.get('request_id')
+        if not request_id:
+            return Response({'status': False, 'message': 'request_id is required'}, 
                             status=status.HTTP_400_BAD_REQUEST)
-        images = ProductImage.objects.filter(request=process_request)
-        image_serializer = ProductImageSerializer(images, many=True)
-        return Response({'status': True, 'image_processing_status': process_request.status, 
-                        'images': image_serializer.data}, status=status.HTTP_200_OK)
+        response = services.send_webhook(request_id)
+        return Response(response, status=status.HTTP_200_OK if response.get('status') \
+                                                            else status.HTTP_400_BAD_REQUEST)
