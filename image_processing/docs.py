@@ -39,8 +39,8 @@ StatusSuccessResponse = inline_serializer(
     }
 )
 
-StatusFailureResponse = inline_serializer(
-    name='StatusFailureResponse',
+GenericResponse = inline_serializer(
+    name='GenericResponse',
     fields={
         'status': serializers.BooleanField(help_text='Status of the request', required=False),
         'message': serializers.CharField(help_text='Error message describing why the request failed', required=False)
@@ -60,6 +60,15 @@ SerializerValidationFailureResponse = inline_serializer(
 )
 
 
+DataNotFoundResponse = inline_serializer(
+    name='DataNotFoundResponse',
+    fields={
+        'message': serializers.CharField(help_text="Data not found message", default="Data Not Found", required=False),
+        'status_code': serializers.IntegerField(help_text='The HTTP status code returned by the server.', required=False),
+        'detail': serializers.CharField(help_text="Details which data is not found", required=False),
+    }
+)
+
 
 def upload_csv_schema():
     return extend_schema(
@@ -68,9 +77,8 @@ def upload_csv_schema():
         tags=['Image Processing'],
         request=UploadCSVSerializer,
         responses={
-            202: UploadCSVResponse,
-            400: SerializerValidationFailureResponse,
-        },
+            202: UploadCSVResponse, 400: SerializerValidationFailureResponse,
+        }
     )
 
 
@@ -87,7 +95,21 @@ def check_status_schema():
             description='Unique identifier for the request'
         )],
         responses={
-            200: StatusSuccessResponse,
-            400: StatusFailureResponse
-        },
+            200: StatusSuccessResponse, 400: GenericResponse, 404: DataNotFoundResponse
+        }
+    )
+
+
+def wehbhook_schema():
+    return extend_schema(
+        summary="Send Webhook",
+        description="This API allows you to send webhook.",
+        tags=['Image Processing'],
+        request=inline_serializer(
+            name='WebhookRequestSerializer',
+            fields={'request_id': serializers.CharField(help_text="Request ID for which you want to send webhook")}
+        ),
+        responses={
+            200: GenericResponse, 400: GenericResponse, 404: DataNotFoundResponse
+        }
     )
